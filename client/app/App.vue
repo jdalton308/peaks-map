@@ -4,10 +4,19 @@
     <h1>Peaks Power</h1>
 
     <div>
-      Highest 20m average: {{twenty.average}}
+      Highest 1m average: {{one.average}}
     </div>
     <div>
       Highest 5m average: {{five.average}}
+    </div>
+    <div>
+      Highest 10m average: {{ten.average}}
+    </div>
+    <div>
+      Highest 15m average: {{fifteen.average}}
+    </div>
+    <div>
+      Highest 20m average: {{twenty.average}}
     </div>
 
     <workout-map
@@ -30,10 +39,15 @@
 
 
 <script>
-
-import DATA from './data/workout-data.json';
 import WorkoutMap from './components/workout-map.vue';
 import WorkoutChart from './components/workout-chart.vue';
+
+import WO_DATA from './data/workout-data.json';
+import {
+  getWorkoutLatLng,
+  getWorkoutTimePower,
+  getMaxPowerAverage,
+} from './data/utils.js';
 
 const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1NnE3NWRlIn0.R1lA0RhpM4caRNQlKBMsHQ';
 
@@ -68,74 +82,19 @@ export default {
       // Chart
       chartData: [],
 
-      twenty: {},
+      // Max Data
+      one: {},
       five: {},
+      ten: {},
+      fifteen: {},
+      twenty: {},
     }
   },
   computed: {
   },
   methods: {
-    // TODO: move to util file
-    getMaxPowerAverage(rangeMinutes) {
-      const range = rangeMinutes * 60;
-      const {samples} = DATA;
-
-      let workingSum = 0;
-      let powerEnd = range - 1;
-
-      // Get sum of initial range
-      for (let i = 0; i < range; i++) {
-        workingSum += samples[i].values.power;
-      }
-
-      let powerSum = workingSum;
-
-      // Figure out the largest range sum
-      for (let j = range; j < samples.length; j++) {
-        const newVal = samples[j].values.power;
-        const droppedVal = samples[j - range].values.power;
-
-        workingSum += (newVal - droppedVal);
-
-        if (workingSum > powerSum) {
-          powerSum = workingSum;
-          powerEnd = j;
-        }
-      }
-
-      // Calculate and return average
-      return {
-        average: (powerSum/range).toFixed(2),
-        endPoint: powerEnd,
-        range: rangeMinutes
-      };
-    },
-
-    // TODO: Pull this method out of component
-    getWorkoutLatLng() {
-      const {samples} = DATA;
-      const latLngs = [];
-
-      samples.forEach((sample) => {
-        if (sample.values.positionLat) {
-          latLngs.push([sample.values.positionLat, sample.values.positionLong]);
-        }
-      });
-
-      return latLngs;
-    },
-
-    // CHART METHODS
-    //---------
-    // TODO: Pull this method out of component
-    getWorkoutTimePower() {
-      return DATA.samples.map((sample) => {
-        return [sample.millisecondOffset, sample.values.power];
-      });
-    },
 
     onChartSelection(e) {
-
       if (e.xAxis) {
         // Draw new highlighted path
         //-----
@@ -145,7 +104,7 @@ export default {
         // Draw polyline of selected data, on top of full path
         const startIndex = Math.round(this.selectionMin/1000);
         const endIndex = Math.round(this.selectionMax/1000);
-        const selectionData = DATA.samples.slice(startIndex, endIndex);
+        const selectionData = WO_DATA.samples.slice(startIndex, endIndex);
         const selectionLatLng = [];
 
         selectionData.forEach((sample) => {
@@ -166,10 +125,9 @@ export default {
     },
 
     onChartHover(e) {
-
       // Highlight point on map
       const hoverPoint = parseInt(e.target.category);
-      const dataPoint = DATA.samples.find((sample) => (sample.millisecondOffset === hoverPoint));
+      const dataPoint = WO_DATA.samples.find((sample) => (sample.millisecondOffset === hoverPoint));
 
       if (dataPoint.values.positionLat) {
         this.hoverMarker = [dataPoint.values.positionLat, dataPoint.values.positionLong];
@@ -182,16 +140,20 @@ export default {
   },
 
   beforeMount: function() {
-    this.twenty = this.getMaxPowerAverage(20);
-    this.five = this.getMaxPowerAverage(5);
-    // Store best 1, 5, 10, 15, and 20 minute "best" efforts
+    const {samples} = WO_DATA;
 
+    // Store best 1, 5, 10, 15, and 20 minute "best" efforts
+    this.one = getMaxPowerAverage(1, samples);
+    this.five = getMaxPowerAverage(5, samples);
+    this.ten = getMaxPowerAverage(10, samples);
+    this.fifteen = getMaxPowerAverage(15, samples);
+    this.twenty = getMaxPowerAverage(20, samples);
 
     // Initialize Map
-    this.workoutPath = this.getWorkoutLatLng();
+    this.workoutPath = getWorkoutLatLng(samples);
 
     // Initialize Chart
-    this.chartData = this.getWorkoutTimePower();
+    this.chartData = getWorkoutTimePower(samples);
   },
 }
 
