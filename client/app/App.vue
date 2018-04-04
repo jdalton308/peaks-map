@@ -16,7 +16,14 @@
       :marker="hoverMarker"
     ></workout-map>
 
-    <highcharts :options="chartOptions"></highcharts>
+    <workout-chart
+      name="Power Output"
+      yLabel="Power (W)"
+      :chartData="chartData"
+      :onChartSelection="onChartSelection"
+      :onDataHover="onChartHover"
+      :onChartLeave="onChartLeave"
+    ></workout-chart>
   </div>
 </template>
 
@@ -26,6 +33,7 @@
 
 import DATA from './data/workout-data.json';
 import WorkoutMap from './components/workout-map.vue';
+import WorkoutChart from './components/workout-chart.vue';
 
 const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1NnE3NWRlIn0.R1lA0RhpM4caRNQlKBMsHQ';
 
@@ -41,54 +49,27 @@ const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1
 // - Show loader for at least 1s while calculations occur
 // - Add hover to map workout path
 // - Style the chart hover bubble
+// - Add other data to chart
 
 
 export default {
   name: 'app',
   components: {
     WorkoutMap,
+    WorkoutChart,
   },
   data() {
     return {
+      // Map
       workoutPath: [],
       selectionPath: [],
       hoverMarker: null,
 
+      // Chart
+      chartData: [],
+
       twenty: {},
       five: {},
-      chartOptions: {
-        chart: {
-          events: {
-            selection: this.onChartSelection,
-          },
-          zoomType: 'x',
-        },
-        title: {
-          text: 'Power Output',
-        },
-        xAxis: {
-          type: 'datetime',
-        },
-        yAxis: {
-          title: {
-            text: 'Power'
-          }
-        },
-        series: [{
-          type: 'line',
-          data: this.getWorkoutTimePower(),
-          name: 'Power Output',
-          events: {
-            mouseOut: this.onChartLeave,
-          },
-          point: {
-            events: {
-              mouseOver: this.onChartHover,
-            }
-          }
-        }]
-      }, // end chartOptions
-
     }
   },
   computed: {
@@ -146,6 +127,7 @@ export default {
 
     // CHART METHODS
     //---------
+    // TODO: Pull this method out of component
     getWorkoutTimePower() {
       return DATA.samples.map((sample) => {
         return [sample.millisecondOffset, sample.values.power];
@@ -199,14 +181,18 @@ export default {
     },
   },
 
-  mounted: function() {
+  beforeMount: function() {
     this.twenty = this.getMaxPowerAverage(20);
     this.five = this.getMaxPowerAverage(5);
     // Store best 1, 5, 10, 15, and 20 minute "best" efforts
 
-    // Draw map of path
+
+    // Initialize Map
     this.workoutPath = this.getWorkoutLatLng();
-  }
+
+    // Initialize Chart
+    this.chartData = this.getWorkoutTimePower();
+  },
 }
 
 </script>

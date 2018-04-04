@@ -10,18 +10,6 @@ import L from 'leaflet';
 
 const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1NnE3NWRlIn0.R1lA0RhpM4caRNQlKBMsHQ';
 
-// TODO:
-// - Create appropriate components
-// - Style interface
-// - Display best power intervals
-//    - Add affordance to toggle power intervals on map, and maybe chart
-// - Move util functions (ie getAverage()) to own file
-// - Style chart
-// - Style map (a little)
-
-// - Show loader for at least 1s while calculations occur
-// - Add hover to map workout path
-// - Style the chart hover bubble
 
 
 export default {
