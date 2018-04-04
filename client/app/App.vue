@@ -31,6 +31,9 @@ const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1
 // - Highlight each interval (1,5,10,20) on map and chart
 //    - Maybe toggle bests on map
 // - Add hover to map workout path
+// - When hover over chart, display point on map
+//    - Limit calculation to evey 500ms
+// - Style the chart hover bubble
 
 
 export default {
@@ -39,9 +42,22 @@ export default {
   },
   data() {
     return {
+      map: null,
+      marker: null,
+      workoutPath: null,
+      selectionMin: null,
+      selectionMax: null,
+      selectionPath: null,
+
       twenty: {},
       five: {},
       chartOptions: {
+        chart: {
+          events: {
+            selection: this.onChartSelection,
+          },
+          zoomType: 'x',
+        },
         title: {
           text: 'Power Output',
         },
@@ -55,10 +71,19 @@ export default {
         },
         series: [{
           type: 'line',
-          data: this.getWorkoutTimePowerMap(),
-          name: 'Power Output'
+          data: this.getWorkoutTimePower(),
+          name: 'Power Output',
+          events: {
+            mouseOut: this.onChartLeave,
+          },
+          point: {
+            events: {
+              mouseOver: this.onChartHover,
+            }
+          }
         }]
-      },
+      }, // end chartOptions
+
     }
   },
   computed: {
@@ -128,27 +153,77 @@ export default {
     putWorkoutOnMap() {
       const latLngs = this.getWorkoutLatLng();
 
-      this.workoutPath = L.polyline(latLngs, {color: 'red', smoothFactor: 3}).addTo(this.map);
+      this.workoutPath = L.polyline(latLngs, {color:'#44AF69', smoothFactor:2}).addTo(this.map);
       this.map.fitBounds(this.workoutPath.getBounds());
     },
 
-    getWorkoutTimePowerMap() {
+    getWorkoutTimePower() {
       return DATA.samples.map((sample) => {
         return [sample.millisecondOffset, sample.values.power];
       });
+    },
+
+    onChartSelection(e) {
+
+      if (e.xAxis) {
+        // Draw new highlighted path
+        //-----
+        this.selectionMin = e.xAxis[0].min;
+        this.selectionMax = e.xAxis[0].max;
+
+        // Draw polyline of selected data, on top of full path
+        const startIndex = Math.round(this.selectionMin/1000);
+        const endIndex = Math.round(this.selectionMax/1000);
+        const selectionData = DATA.samples.slice(startIndex, endIndex);
+        const selectionLatLng = [];
+
+        selectionData.forEach((sample) => {
+          if (sample.values.positionLat) {
+            selectionLatLng.push([sample.values.positionLat, sample.values.positionLong]);
+          }
+        });
+
+        this.selectionPath = L.polyline(selectionLatLng, {color:'#F8333C', weight:4, smoothFactor:2}).addTo(this.map);
+        this.map.fitBounds(this.selectionPath.getBounds());
+      } else {
+        // Clear highlighted path
+        //-----
+        this.selectionMin = null;
+        this.selectionMax = null;
+        this.selectionPath.remove();
+        this.map.fitBounds(this.workoutPath.getBounds());
+      }
+    },
+
+    onChartHover(e) {
+      const hoverPoint = parseInt(e.target.category);
+      const dataPoint = DATA.samples.find((sample) => (sample.millisecondOffset === hoverPoint));
+
+      // highlight point on map
+      if (dataPoint.values.positionLat) {
+        const latLng = [dataPoint.values.positionLat, dataPoint.values.positionLong];
+
+        if (!this.marker) {
+          this.marker = L.marker(latLng, {autoPan:true}).addTo(this.map);
+        } else {
+          this.marker.setLatLng(latLng);
+        }
+      }
+    },
+
+    onChartLeave(e) {
+      this.marker.remove();
+      this.marker = null;
     }
   },
   mounted: function() {
     this.twenty = this.getMaxPowerAverage(20);
     this.five = this.getMaxPowerAverage(5);
     // Store best 1, 5, 10, 15, and 20 minute "best" efforts
-    // Highlight each of those intervals on the chart and map
 
     // Draw map of path
     this.initializeMap();
     this.putWorkoutOnMap();
-
-    // Draw Chart
   }
 }
 

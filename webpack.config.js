@@ -98,6 +98,9 @@ module.exports = {
     new CopyWebpackPlugin([
       // Assets
       { from: 'client/app/assets', to: 'assets' },
+
+      // Leaflet Images
+      { from: 'node_modules/leaflet/dist/images', to: 'assets/images' },
     ])
   ],
 
