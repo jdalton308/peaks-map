@@ -10,7 +10,11 @@
       Highest 5m average: {{five.average}}
     </div>
 
-    <div id="map"></div>
+    <workout-map
+      :path="workoutPath"
+      :highlightedPath="selectionPath"
+      :marker="hoverMarker"
+    ></workout-map>
 
     <highcharts :options="chartOptions"></highcharts>
   </div>
@@ -21,33 +25,34 @@
 <script>
 
 import DATA from './data/workout-data.json';
-import L from 'leaflet';
+import WorkoutMap from './components/workout-map.vue';
 
 const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1NnE3NWRlIn0.R1lA0RhpM4caRNQlKBMsHQ';
 
 // TODO:
-// - Move getAverage() to util file
+// - Create appropriate components
+// - Style interface
+// - Display best power intervals
+//    - Add affordance to toggle power intervals on map, and maybe chart
+// - Move util functions (ie getAverage()) to own file
+// - Style chart
+// - Style map (a little)
+
 // - Show loader for at least 1s while calculations occur
-// - Highlight each interval (1,5,10,20) on map and chart
-//    - Maybe toggle bests on map
 // - Add hover to map workout path
-// - When hover over chart, display point on map
-//    - Limit calculation to evey 500ms
 // - Style the chart hover bubble
 
 
 export default {
   name: 'app',
   components: {
+    WorkoutMap,
   },
   data() {
     return {
-      map: null,
-      marker: null,
-      workoutPath: null,
-      selectionMin: null,
-      selectionMax: null,
-      selectionPath: null,
+      workoutPath: [],
+      selectionPath: [],
+      hoverMarker: null,
 
       twenty: {},
       five: {},
@@ -125,18 +130,7 @@ export default {
       };
     },
 
-    initializeMap() {
-      this.map = L.map('map').setView([51.505, -0.09], 13);
-
-      L.tileLayer(`https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=${accessToken}`, {
-        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
-        maxZoom: 18,
-        id: 'mapbox.streets',
-        accessToken: accessToken,
-        detectRetina: true,
-      }).addTo(this.map);
-    },
-
+    // TODO: Pull this method out of component
     getWorkoutLatLng() {
       const {samples} = DATA;
       const latLngs = [];
@@ -150,13 +144,8 @@ export default {
       return latLngs;
     },
 
-    putWorkoutOnMap() {
-      const latLngs = this.getWorkoutLatLng();
-
-      this.workoutPath = L.polyline(latLngs, {color:'#44AF69', smoothFactor:2}).addTo(this.map);
-      this.map.fitBounds(this.workoutPath.getBounds());
-    },
-
+    // CHART METHODS
+    //---------
     getWorkoutTimePower() {
       return DATA.samples.map((sample) => {
         return [sample.millisecondOffset, sample.values.power];
@@ -183,47 +172,40 @@ export default {
           }
         });
 
-        this.selectionPath = L.polyline(selectionLatLng, {color:'#F8333C', weight:4, smoothFactor:2}).addTo(this.map);
-        this.map.fitBounds(this.selectionPath.getBounds());
+        this.selectionPath = selectionLatLng;
+
       } else {
-        // Clear highlighted path
+        // Selection was reset, so clear highlighted path
         //-----
         this.selectionMin = null;
         this.selectionMax = null;
-        this.selectionPath.remove();
-        this.map.fitBounds(this.workoutPath.getBounds());
+        this.selectionPath = [];
       }
     },
 
     onChartHover(e) {
+
+      // Highlight point on map
       const hoverPoint = parseInt(e.target.category);
       const dataPoint = DATA.samples.find((sample) => (sample.millisecondOffset === hoverPoint));
 
-      // highlight point on map
       if (dataPoint.values.positionLat) {
-        const latLng = [dataPoint.values.positionLat, dataPoint.values.positionLong];
-
-        if (!this.marker) {
-          this.marker = L.marker(latLng, {autoPan:true}).addTo(this.map);
-        } else {
-          this.marker.setLatLng(latLng);
-        }
+        this.hoverMarker = [dataPoint.values.positionLat, dataPoint.values.positionLong];
       }
     },
 
     onChartLeave(e) {
-      this.marker.remove();
-      this.marker = null;
-    }
+      this.hoverMarker = null;
+    },
   },
+
   mounted: function() {
     this.twenty = this.getMaxPowerAverage(20);
     this.five = this.getMaxPowerAverage(5);
     // Store best 1, 5, 10, 15, and 20 minute "best" efforts
 
     // Draw map of path
-    this.initializeMap();
-    this.putWorkoutOnMap();
+    this.workoutPath = this.getWorkoutLatLng();
   }
 }
 
@@ -233,9 +215,6 @@ export default {
 
 <style lang="scss">
 
-#map {
-  height: 50vh;
-  width: 50vw;
-}
+
 
 </style>
