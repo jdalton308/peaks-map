@@ -11,6 +11,8 @@
     </div>
 
     <div id="map"></div>
+
+    <highcharts :options="chartOptions"></highcharts>
   </div>
 </template>
 
@@ -38,7 +40,25 @@ export default {
   data() {
     return {
       twenty: {},
-      five: {}
+      five: {},
+      chartOptions: {
+        title: {
+          text: 'Power Output',
+        },
+        xAxis: {
+          type: 'datetime',
+        },
+        yAxis: {
+          title: {
+            text: 'Power'
+          }
+        },
+        series: [{
+          type: 'line',
+          data: this.getWorkoutTimePowerMap(),
+          name: 'Power Output'
+        }]
+      },
     }
   },
   computed: {
@@ -112,6 +132,11 @@ export default {
       this.map.fitBounds(this.workoutPath.getBounds());
     },
 
+    getWorkoutTimePowerMap() {
+      return DATA.samples.map((sample) => {
+        return [sample.millisecondOffset, sample.values.power];
+      });
+    }
   },
   mounted: function() {
     this.twenty = this.getMaxPowerAverage(20);
@@ -122,6 +147,8 @@ export default {
     // Draw map of path
     this.initializeMap();
     this.putWorkoutOnMap();
+
+    // Draw Chart
   }
 }
 

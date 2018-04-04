@@ -7,8 +7,12 @@ import App from './App.vue';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
+// L.Icon.Default.imagePath = 'node_modules/leaflet/dist/images/';
 
+// Chart Library
+import VueHighcharts from 'vue-highcharts';
+
+Vue.use(VueHighcharts);
 
 
 new Vue({
