@@ -1,4 +1,7 @@
 
+@import './variables';
+
+
 html,
 body {
   padding: 0;
@@ -12,10 +15,42 @@ body {
   font-weight: 300;
 }
 
+
+// Typography
+//------
 h1,
 h2,
 h3,
 h4 {
   font-family: 'Montserrat', sans-serif;
   margin: 0;
+}
+
+
+// Buttons
+//------
+button {
+  display: inline-block;
+  padding: 8px 12px 7px;
+  border: 0;
+  border-radius: 0;
+  background-color: $orange;
+  font-size: 1rem;
+  font-family: inherit;
+  color: $white;
+  transition: all 0.3s;
+  cursor: pointer;
+
+  &:hover {
+    background-color: darken($orange, 10%);
+  }
+  &:active {
+    transition: all 0.08s;
+    background-color: $orange;
+  }
+
+  &.small {
+    font-size: 0.75rem;
+    padding: 4px 6px 3px;
+  }
 }

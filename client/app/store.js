@@ -5,8 +5,8 @@ const store = {
     selectionLatLng: null,
 
     plotBand: {
-      start: null,
-      end: null,
+      from: null,
+      to: null,
       color: null,
     },
   },

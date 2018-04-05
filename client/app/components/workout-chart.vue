@@ -91,10 +91,14 @@ export default {
     plotBand: function(newVal) {
       const {chart} = this.$refs.workoutChart;
       const bandId = 'band';
-      const plotBandWithId = Object.assign({}, newVal, {id: bandId});
-
       chart.xAxis[0].removePlotBand(bandId);
-      chart.xAxis[0].addPlotBand(plotBandWithId);
+
+      console.log('new Plot Band: ', newVal);
+
+      if (newVal.from) {
+        const plotBandWithId = Object.assign({}, newVal, {id: bandId});
+        chart.xAxis[0].addPlotBand(plotBandWithId);
+      }
     }
   },
 

@@ -29,6 +29,12 @@
         <div class="controls-content">
           <div class="controls-content-title">
             Highest Power Averages
+            <button
+              class="power-reset small"
+              @click="resetPowerRange"
+            >
+              RESET
+            </button>
           </div>
           <div class="controls-content-list">
             <div class="content-list-titles">
@@ -132,8 +138,6 @@ import {
 const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1NnE3NWRlIn0.R1lA0RhpM4caRNQlKBMsHQ';
 
 // TODO:
-// - Affordance to reset selected power interval
-// - Style chart - fonts
 // - Move "control panel" to component & vuex
 
 
@@ -178,6 +182,12 @@ export default {
       this.$store.commit('setPlotBand', plotBand);
       this.selectedPowerRange = value;
     },
+
+    resetPowerRange(e) {
+      this.$store.commit('setSelectionLatLng', []);
+      this.$store.commit('setPlotBand', {});
+      this.selectedPowerRange = null;
+    }
   },
 
   beforeMount: function() {
@@ -249,8 +259,8 @@ export default {
         .select-arrow {
           display: inline-block;
           position: absolute;
-          top: 8px;
-          right: 14px;
+          top: 9px;
+          right: 2px;
           border-top: 5px solid #222;    
           border-left: 5px solid transparent;
           border-right: 5px solid transparent;
@@ -260,7 +270,11 @@ export default {
     .controls-content {
       .controls-content-title {
         margin-bottom: 12px;
-        padding: 0 32px 0 16px;
+        padding: 0 16px;
+
+        .power-reset {
+          float: right;
+        }
       }
       .controls-content-list {
         text-align: center;
