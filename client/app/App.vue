@@ -132,16 +132,9 @@ import {
 const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1NnE3NWRlIn0.R1lA0RhpM4caRNQlKBMsHQ';
 
 // TODO:
-// - Style interface
-// - Display best power intervals
-//    - Add affordance to toggle power intervals on map, and maybe chart
-// - Style chart
-// - Style map (a little)
-
-// - Show loader for at least 1s while calculations occur
-// - Add hover to map workout path
-// - Style the chart hover bubble
-// - Add other data to chart
+// - Affordance to reset selected power interval
+// - Style chart - fonts
+// - Move "control panel" to component & vuex
 
 
 export default {
@@ -256,8 +249,8 @@ export default {
         .select-arrow {
           display: inline-block;
           position: absolute;
-          top: 6px;
-          right: 12px;
+          top: 8px;
+          right: 14px;
           border-top: 5px solid #222;    
           border-left: 5px solid transparent;
           border-right: 5px solid transparent;

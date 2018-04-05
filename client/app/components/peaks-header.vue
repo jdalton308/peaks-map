@@ -2,9 +2,9 @@
 <template>
 
 <header>
-  <div class="header-logo">
+  <h1 class="header-logo">
     Peaks Power
-  </div>
+  </h1>
 </header>
 
 </template>

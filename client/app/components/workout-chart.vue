@@ -30,6 +30,9 @@ export default {
           zoomType: 'x',
           className: 'workout-chart',
           height: (window.innerHeight/2 - 53),
+          style: {
+            fontFamily: 'Open Sans'
+          }
         },
         title: {
           text: '',
