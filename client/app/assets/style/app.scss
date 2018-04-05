@@ -52,5 +52,10 @@ button {
   &.small {
     font-size: 0.75rem;
     padding: 4px 6px 3px;
+    background-color: $orange-light;
+
+    &:hover {
+      background-color: $orange;
+    }
   }
 }

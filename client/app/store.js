@@ -28,7 +28,7 @@ const store = {
         end: null,
         color: null,
       };
-    }
+    },
   }
 }
 
