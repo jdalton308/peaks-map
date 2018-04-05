@@ -10,12 +10,11 @@
 </template>
 
 
+
 <script>
 
 export default {
   name: 'peaks-header',
-  props: [
-  ],
   data() {
     return {
     }
@@ -23,6 +22,7 @@ export default {
 }
 
 </script>
+
 
 
 <style lang="scss">

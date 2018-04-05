@@ -1,6 +1,8 @@
 
 <template>
-    <highcharts :options="chartOptions" ref="workoutChart"></highcharts>
+
+<highcharts :options="chartOptions" ref="workoutChart"></highcharts>
+
 </template>
 
 
@@ -91,10 +93,13 @@ export default {
     plotBand: function(newVal) {
       const {chart} = this.$refs.workoutChart;
       const bandId = 'band';
+
+      // Always remove previous band
+      //--
       chart.xAxis[0].removePlotBand(bandId);
 
-      console.log('new Plot Band: ', newVal);
-
+      // If new band is created, add
+      //--
       if (newVal.from) {
         const plotBandWithId = Object.assign({}, newVal, {id: bandId});
         chart.xAxis[0].addPlotBand(plotBandWithId);
@@ -106,7 +111,7 @@ export default {
     onChartSelection(e) {
       if (e.xAxis) {
         // Draw new highlighted path
-        //-----
+        //--
         const selectionMin = e.xAxis[0].min;
         const selectionMax = e.xAxis[0].max;
 
@@ -119,13 +124,14 @@ export default {
 
       } else {
         // Selection was reset, so clear highlighted path
-        //-----
+        //--
         this.$store.commit('setSelectionLatLng', []);
       }
     },
 
     onChartHover(e) {
       // Highlight point on map
+      //--
       const hoverPoint = parseInt(e.target.category);
       const dataPoint = WO_DATA.samples.find((sample) => (sample.millisecondOffset === hoverPoint));
 
@@ -147,6 +153,7 @@ export default {
 <style lang="scss">
 
 @import '../assets/style/_variables.scss';
+
 
 .workout-chart {
   width: 100%;

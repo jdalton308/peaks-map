@@ -131,15 +131,6 @@ export default {
     }
   },
 
-  computed: {
-    // ...mapState([
-    //   'selectedPowerRange',
-    // ]),
-  },
-
-  watch: {
-  },
-
   methods: {
     onPowerRangeSelection(e) {
       const {value} = e.target;
@@ -183,6 +174,7 @@ export default {
 <style lang="scss">
 
 @import '../assets/style/_variables.scss';
+
 
 .controls {
   display: inline-block;

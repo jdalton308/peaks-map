@@ -28,6 +28,7 @@ export function getMaxPowerAverage(rangeMinutes, samples) {
   let powerEnd = range - 1;
 
   // Get sum of initial range
+  //--
   for (let i = 0; i < range; i++) {
     workingSum += samples[i].values.power;
   }
@@ -35,6 +36,7 @@ export function getMaxPowerAverage(rangeMinutes, samples) {
   let powerSum = workingSum;
 
   // Figure out the largest range sum
+  //--
   for (let j = range; j < samples.length; j++) {
     const newVal = samples[j].values.power;
     const droppedVal = samples[j - range].values.power;
@@ -48,13 +50,14 @@ export function getMaxPowerAverage(rangeMinutes, samples) {
   }
 
   // Save subarray of range
+  //--
   const subRange = [];
   for (let k = (powerEnd - range); k <= powerEnd; k++) {
     subRange.push(samples[k]);
   }
 
-
   // Calculate and return average
+  //--
   return {
     average: (powerSum/range).toFixed(2),
     endPoint: powerEnd,

@@ -1,29 +1,32 @@
 
 <template>
-  <div id="app">
-    <PeaksHeader></PeaksHeader>
 
-    <div class="map-row">
-      <div class="map-container">
-        <workout-map
-          :path="workoutPath"
-        ></workout-map>
-      </div>
+<div id="app">
+  <PeaksHeader></PeaksHeader>
 
-      <workout-power-panel></workout-power-panel>
+  <div class="map-row">
+    <div class="map-container">
+      <workout-map
+        :path="workoutPath"
+      ></workout-map>
     </div>
 
-    <workout-chart
-      name="Power Output"
-      yLabel="Power (W)"
-      :chartData="chartData"
-    ></workout-chart>
+    <workout-power-panel></workout-power-panel>
   </div>
+
+  <workout-chart
+    name="Power Output"
+    yLabel="Power (W)"
+    :chartData="chartData"
+  ></workout-chart>
+</div>
+
 </template>
 
 
 
 <script>
+
 import PeaksHeader from './components/peaks-header.vue';
 import WorkoutMap from './components/workout-map.vue';
 import WorkoutChart from './components/workout-chart.vue';
@@ -53,9 +56,6 @@ export default {
       // Chart
       chartData: [],
     }
-  },
-
-  methods: {
   },
 
   beforeMount: function() {
@@ -90,6 +90,5 @@ export default {
     box-shadow: 0 0 5px $grey-dark;
   }
 }
-
 
 </style>

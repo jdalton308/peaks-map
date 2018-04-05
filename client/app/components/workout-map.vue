@@ -1,6 +1,8 @@
 
 <template>
-  <div id="map"></div>
+
+<div id="map"></div>
+
 </template>
 
 
@@ -17,7 +19,7 @@ const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1
 export default {
   name: 'workout-map',
   props: [
-    'path', // array of [lat,lng] subarrays
+    'path',
   ],
 
   data() {
@@ -61,8 +63,6 @@ export default {
   methods: {
     initializeMap() {
       this.map = L.map('map').setView([39.7839, 104.99], 13);
-
-      // mapbox://styles/mapbox/light-v9
 
       L.tileLayer(`https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=${accessToken}`, {
         attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, Imagery © <a href="http://mapbox.com">Mapbox</a>',

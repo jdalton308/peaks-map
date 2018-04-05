@@ -10,9 +10,11 @@ import './assets/style/app.scss';
 // Map Library
 import 'leaflet/dist/leaflet.css';
 
+
 // Chart Library
 import VueHighcharts from 'vue-highcharts';
 Vue.use(VueHighcharts);
+
 
 // Vuex
 Vue.use(Vuex);
