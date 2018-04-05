@@ -35,12 +35,25 @@ export default {
           text: '',
           floating: true,
         },
+        tooltip: {
+          borderRadius: 0,
+          borderColor: 'transparent',
+          xDateFormat: '%H:%M:%S',
+          useHTML: true,
+          headerFormat: `
+            <div style="font-size:12px; text-align:center; margin-bottom:8px;">
+              {point.key}
+            </div>`,
+          pointFormat: `
+            <div style="color:{point.color}; text-align:center; text-align:center; font-size:16px; font-weight:700;">
+              {point.y}
+            </div>`
+        },
         legend: {
           enabled: false,
         },
         xAxis: {
           type: 'datetime',
-          // plotBands: [(this.plotBand && this.plotBand.start) ? this.plotBand : null],
         },
         yAxis: {
           title: {
@@ -49,6 +62,7 @@ export default {
         },
         series: [{
           type: 'line',
+          color: '#2B9EB3',
           data: this.chartData,
           name: this.name,
           events: {
@@ -72,18 +86,12 @@ export default {
 
   watch: {
     plotBand: function(newVal) {
-      // const newChartOptions = JSON.parse(JSON.stringify(this.chartOptions));
-      // newChartOptions.xAxis.plotBands = [newVal];
-      // this.chartOptions = newChartOptions;
-
       const {chart} = this.$refs.workoutChart;
-      console.log('chart ref: ', chart);
-      chart.xAxis[0].addPlotBand(newVal);
-      // chart.xAxis[0].addPlotBand({
-      //   from: 2849000,
-      //   to: 4243000,
-      //   color: 'red',
-      // });
+      const bandId = 'band';
+      const plotBandWithId = Object.assign({}, newVal, {id: bandId});
+
+      chart.xAxis[0].removePlotBand(bandId);
+      chart.xAxis[0].addPlotBand(plotBandWithId);
     }
   },
 

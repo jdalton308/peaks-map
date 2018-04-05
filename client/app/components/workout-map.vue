@@ -73,13 +73,16 @@ export default {
 
     putWorkoutOnMap() {
       if (this.path) {
-        this.workoutPath = L.polyline(this.path, {color:'#44AF69', smoothFactor:2}).addTo(this.map);
+        this.workoutPath = L.polyline(this.path, {color:'#2B9EB3', smoothFactor:2}).addTo(this.map);
         this.map.fitBounds(this.workoutPath.getBounds());
       }
     },
 
     drawHighlightedPath() {
-      this.mapHighlightPath = L.polyline(this.selectionLatLng, {color:'#F8333C', weight:4, smoothFactor:2}).addTo(this.map);
+      if (this.mapHighlightPath) {
+        this.mapHighlightPath.remove();
+      }
+      this.mapHighlightPath = L.polyline(this.selectionLatLng, {color:'#E64120', weight:4, smoothFactor:2}).addTo(this.map);
       this.map.fitBounds(this.mapHighlightPath.getBounds());
     },
 

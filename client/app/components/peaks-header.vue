@@ -34,7 +34,7 @@ header {
   position: relative;
   z-index: 2;
   padding: 12px 24px;
-  background-color: $teal;
+  background-color: $blue;
   box-shadow: 0 1px 4px $grey-darker;
 
   .header-logo {

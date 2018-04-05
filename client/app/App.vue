@@ -178,7 +178,7 @@ export default {
       const plotBand = {
         from: new Date(this[value].itemsTimePower[0][0]),
         to: new Date(this[value].itemsTimePower[this[value].itemsTimePower.length-1][0]),
-        color: '#F17300' // orange
+        color: '#ffc5ba' // light orange
       };
 
       this.$store.commit('setSelectionLatLng', this[value].itemsLatLng);
