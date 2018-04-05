@@ -47,10 +47,20 @@ export function getMaxPowerAverage(rangeMinutes, samples) {
     }
   }
 
+  // Save subarray of range
+  const subRange = [];
+  for (let k = (powerEnd - range); k <= powerEnd; k++) {
+    subRange.push(samples[k]);
+  }
+
+
   // Calculate and return average
   return {
     average: (powerSum/range).toFixed(2),
     endPoint: powerEnd,
-    range: rangeMinutes
+    range: rangeMinutes,
+    items: subRange,
+    itemsLatLng: getWorkoutLatLng(subRange),
+    itemsTimePower: getWorkoutTimePower(subRange),
   };
 };

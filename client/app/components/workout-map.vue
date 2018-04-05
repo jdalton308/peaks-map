@@ -6,7 +6,9 @@
 
 
 <script>
+
 import L from 'leaflet';
+import { mapState } from 'vuex';
 
 const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1NnE3NWRlIn0.R1lA0RhpM4caRNQlKBMsHQ';
 
@@ -15,13 +17,9 @@ const accessToken = 'pk.eyJ1IjoiamRhbHRvbjMwOCIsImEiOiJjamZrbDl4c3UwNzNhMnhvNHN1
 export default {
   name: 'workout-map',
   props: [
-    // TODO: Typechecking
     'path', // array of [lat,lng] subarrays
-    'highlightedPath', // if present, draw
-    'marker',  // if present, show
   ],
-  components: {
-  },
+
   data() {
     return {
       map: null,
@@ -30,23 +28,28 @@ export default {
       mapHighlightPath: null,
     }
   },
+
   computed: {
-    // TODO: Move watcher logic into computed?
+    ...mapState([
+      'selectionLatLng',
+      'hoverLatLng',
+    ]),
   },
+
   watch: {
     path: function(newVal) {
       if (this.map && newVal.length) {
         this.putWorkoutOnMap();
       }
     },
-    marker: function(newVal, oldVal) {
-      if (newVal) {
+    hoverLatLng: function(newVal) {
+      if (newVal.length) {
         this.drawMarker();
       } else if (this.mapMarker) {
         this.clearMarker();
       }
     },
-    highlightedPath: function(newVal) {
+    selectionLatLng: function(newVal) {
       if (newVal.length) {
         this.drawHighlightedPath();
       } else {
@@ -54,6 +57,7 @@ export default {
       }
     }
   },
+
   methods: {
     initializeMap() {
       this.map = L.map('map').setView([39.7839, 104.99], 13);
@@ -75,7 +79,7 @@ export default {
     },
 
     drawHighlightedPath() {
-      this.mapHighlightPath = L.polyline(this.highlightedPath, {color:'#F8333C', weight:4, smoothFactor:2}).addTo(this.map);
+      this.mapHighlightPath = L.polyline(this.selectionLatLng, {color:'#F8333C', weight:4, smoothFactor:2}).addTo(this.map);
       this.map.fitBounds(this.mapHighlightPath.getBounds());
     },
 
@@ -88,9 +92,9 @@ export default {
 
     drawMarker() {
         if (!this.mapMarker) {
-          this.mapMarker = L.marker(this.marker, {autoPan:true}).addTo(this.map);
+          this.mapMarker = L.marker(this.hoverLatLng, {autoPan:true}).addTo(this.map);
         } else {
-          this.mapMarker.setLatLng(this.marker);
+          this.mapMarker.setLatLng(this.hoverLatLng);
         }
     },
 
@@ -98,8 +102,8 @@ export default {
       this.mapMarker.remove();
       this.mapMarker = null;
     }
-
   },
+
   mounted: function() {
     this.initializeMap();
     if (this.path.length) {
@@ -115,8 +119,8 @@ export default {
 <style lang="scss">
 
 #map {
-  height: 50vh;
-  width: 50vw;
+  height: 100%;
+  width: 100%;
 }
 
 </style>
